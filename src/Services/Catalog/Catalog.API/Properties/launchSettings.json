@@ -20,6 +20,9 @@
     "Catalog.API": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
+      "docker" "exec",
+      "-it" "shopping-mongo",
+      "/bin/bash": null,
       "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5000",
