@@ -1,8 +1,20 @@
 version: '3.4'
 
+# proper indendation is critical in these files, 2 spaces are required for each indentation.
+# Comprehensive Documentation: https://docs.docker.com/compose/compose-file/
 services:
+
+  catalogdb:
+    image: mongo
+
+
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
-      dockerfile: Services/Catalog/Catalog.API/Dockerfile
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile # very important path
+
+
+ # containers which exist on client system in their own seperate containers
+volumes:    
+  mongo_data:

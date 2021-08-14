@@ -1,8 +1,24 @@
 version: '3.4'
 
+# list of all services in the architecture
 services:
-  catalog.api:
+
+ catalogdb:
+    container_name: catalogdb
+    restart: always
+    ports:
+      - "27017:27017"   # container port number/ local computer port number
+    volumes:  
+      - mongo_data:/data/db
+
+ catalog.api:
+    container_name: catalog.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017" # override appsettings.json to use our new mongo container...
+    depends_on:
+      - catalogdb # our catalog.api depends on catalogdb, also this says to start db first
     ports:
-      - "80"
+      - "8000:80" # port forward container port 8000 to our local port 80
+
+   
