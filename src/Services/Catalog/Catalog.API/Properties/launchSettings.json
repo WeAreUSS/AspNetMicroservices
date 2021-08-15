@@ -29,6 +29,7 @@
       "docker": "exec",
       "applicationUrl": "http://localhost:5000"
     },
+    // the section below is added once we add docker orchestrator support.
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
