@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Discount.API.Repositories;
+using Discount.API.Repositories.Interfaces;
 
 namespace Discount.API
 {
@@ -25,12 +27,17 @@ namespace Discount.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Added for repository injection in controller
+            services.AddScoped<IDiscountRepository, DiscountRepository>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Discount.API", Version = "v1" });
             });
+
+            //services.AddHealthChecks()
+            //    .AddNpgSql(Configuration["DatabaseSettings:ConnectionString"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,10 +54,21 @@ namespace Discount.API
 
             app.UseAuthorization();
 
+            // First Version
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //    endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+            //    {
+            //        Predicate = _ => true,
+            //        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            //    });
+            //});
         }
     }
 }
