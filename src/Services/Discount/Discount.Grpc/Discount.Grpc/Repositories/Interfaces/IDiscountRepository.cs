@@ -1,8 +1,11 @@
 ﻿using System.Threading.Tasks;
 
-using Discount.API.Entities;
+using Discount.Grpc.Entities;
 
-namespace Discount.API.Repositories.Interfaces
+
+// Copied from Discount.API with namespace changes
+//================================================
+namespace Discount.Grpc.Repositories.Interfaces
 {
     public interface IDiscountRepository
     {

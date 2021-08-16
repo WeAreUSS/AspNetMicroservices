@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks;
-//using AutoMapper;
-//using Basket.API.GrpcServices;
+using AutoMapper;
+using Basket.API.GrpcServices; // enabled after DiscountGrpcService.cs was developed
 //using EventBus.Messages.Events;
 //using MassTransit;
 using Basket.API.Entities;
@@ -16,25 +16,33 @@ namespace Basket.API.Controllers
     public class BasketController : ControllerBase
     {
         private readonly IBasketRepository _repository;
-        //private readonly DiscountGrpcService _discountGrpcService;
+        private readonly DiscountGrpcService _discountGrpcService;
         //private readonly IPublishEndpoint _publishEndpoint;
-        //private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
         // First implementation - Basket repository only
-        public BasketController(IBasketRepository repository)
+        //public BasketController(IBasketRepository repository)
+        //{
+        //    _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        //}
+
+        // Second implementation - After DiscountGrpcService.cs was developed
+        public BasketController(IBasketRepository repository, DiscountGrpcService discountGrpcService,  IMapper mapper)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         //// Final implementation
-        // public BasketController(IBasketRepository repository, DiscountGrpcService discountGrpcService, IPublishEndpoint publishEndpoint, IMapper mapper)
+        //public BasketController(IBasketRepository repository, DiscountGrpcService discountGrpcService, IPublishEndpoint publishEndpoint, IMapper mapper)
         //{
         //    _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         //    _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
         //    _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
         //    _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         //}
-        
+
         [HttpGet("{userName}", Name = "GetBasket")]
         [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<ShoppingCart>> GetBasket(string userName)
@@ -50,11 +58,11 @@ namespace Basket.API.Controllers
         [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<ShoppingCart>> UpdateBasket([FromBody] ShoppingCart basket)
         {
-            // Communicate with Discount.Grpc and calculate lastest prices of products into sc
+            // Communicate with Discount.Grpc, an injected dependency, and calculate latest prices of products into ShoppingCart ~"Basket"
             foreach (var item in basket.Items)
             {
-              //  var coupon = await _discountGrpcService.GetDiscount(item.ProductName);
-               // item.Price -= coupon.Amount;
+               var coupon = await _discountGrpcService.GetDiscount(item.ProductName); // enabled after DiscountGrpcService.cs was developed
+               item.Price -= coupon.Amount; // enabled after DiscountGrpcService.cs was developed
             }
 
             return Ok(await _repository.UpdateBasket(basket));

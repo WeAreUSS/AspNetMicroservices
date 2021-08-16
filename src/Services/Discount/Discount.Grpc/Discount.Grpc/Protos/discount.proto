@@ -1,0 +1,51 @@
+syntax = "proto3"; // required,ENUM says to use this version
+
+option csharp_namespace = "Discount.Grpc.Protos"; // optional,ENUM tells the system to generate classes in this namespace
+
+service DiscountProtoService {
+
+	rpc GetDiscount (GetDiscountRequest) returns (CouponModel);
+
+	rpc CreateDiscount (CreateDiscountRequest) returns (CouponModel);
+	rpc UpdateDiscount (UpdateDiscountRequest) returns (CouponModel);
+	rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);	  
+}
+
+message GetDiscountRequest {
+	// the assignment requires an ordinal number.
+	// that is why a 1 is assigned here.
+  string productName = 1;
+}
+
+message CouponModel {
+	int32 id = 1;
+	string productName = 2;
+	string description = 3;
+	int32 amount = 4;
+}
+
+message CreateDiscountRequest {
+  CouponModel coupon = 1;
+}
+
+message UpdateDiscountRequest {
+  CouponModel coupon = 1;
+}
+
+message DeleteDiscountRequest {
+  string productName = 1;
+}
+
+message DeleteDiscountResponse {
+  bool success = 1;
+}
+
+
+// Next Steps
+// ===========
+// 1. Change properties for this file to build from protobuf compiler
+// 2. Set the target to be server only for this perticular instance because we are creating a server for Discount.API
+// 3. Remove the following from the Discount.Grpc project file:
+//		<ItemGroup>
+//			<None Remove="Protos\discount.proto" />
+//		</ItemGroup>
