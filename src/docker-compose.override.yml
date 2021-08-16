@@ -11,14 +11,39 @@ services:
     volumes:  
       - mongo_data:/data/db
 
+ basketdb:
+    container_name: basketdb
+    restart: always
+    ports:
+      - "6379:6379"
+
+ portainer:
+    container_name: portainer
+    restart: always
+    ports:
+      - "8080:8000"
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # comes from documentation for portainer and docker
+      - portainer_data:/data
+
  catalog.api:
     container_name: catalog.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017" # override appsettings.json to use our new mongo container...
     depends_on:
-      - catalogdb # our catalog.api depends on catalogdb, also this says to start db first
+      - catalogdb # our catalog.api depends on catalogdb, also this says to start db before catalog.api
     ports:
       - "8000:80" # port forward container port 8000 to our local port 80
+      
+ basket.api:
+    container_name: basket.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "CacheSettings:ConnectionString=basketdb:6379" # override appsettings.json to use our Redis container...
+    depends_on:
+      - basketdb # our basket.api depends on basketdb for caching of ShoppingCart, also this says to start db before basket.api
+    ports:
+      - "8001:80"
 
-   
