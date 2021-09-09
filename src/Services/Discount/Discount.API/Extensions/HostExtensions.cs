@@ -9,6 +9,8 @@ using Npgsql;
 // Circuit Breaker, Timeout, Bulkhead Isolation, and Fallback in a fluent and thread-safe manner.
 //  Project file reference: <PackageReference Include="Polly" Version="7.2.1" />
 
+
+// Not used in GRPC, created to build and test Discount.Api ONLY
 namespace Discount.API.Extensions
 {
     public static class HostExtensions

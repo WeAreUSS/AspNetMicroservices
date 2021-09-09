@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Discount.API.Entities
 {
+    // Not used in GRPC, created to build and test Discount.Api ONLY
     public class Coupon
     {
         public int Id { get; set; }

@@ -12,13 +12,12 @@ namespace Basket.API.Data
     {
 		 private readonly IDistributedCache _redisCache;
          
-
+        // Basket Property
          public static ShoppingCart Basket { get; set; }  
 		 
-        public BasketSeed( IDistributedCache cache)
+        public BasketSeed(IDistributedCache cache)
         {
             GetPreconfiguredShoppingCart("Walt");
-          
         } 
 
         private static void GetPreconfiguredShoppingCart(string name)

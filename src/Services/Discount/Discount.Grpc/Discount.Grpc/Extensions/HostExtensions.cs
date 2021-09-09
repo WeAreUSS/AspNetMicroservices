@@ -33,7 +33,7 @@ namespace Discount.Grpc.Extensions
                     logger.LogInformation("Migrating postresql database.");
 
                     using var connection = new NpgsqlConnection
-                        (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+                        (configuration.GetValue<string>("DatabaseSettings:PostgresConnectionString"));
                     connection.Open();
 
                     using var command = new NpgsqlCommand

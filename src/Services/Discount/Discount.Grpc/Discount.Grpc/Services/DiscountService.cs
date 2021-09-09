@@ -12,8 +12,9 @@ namespace Discount.Grpc.Services
     public class DiscountService : DiscountProtoService.DiscountProtoServiceBase
     {
         private readonly IDiscountRepository _repository;
-        private readonly IMapper _mapper;   // cupon is returned from the Discount.API repository we have to map that to cuponModel in the discount.proto file
-                                            // these are nearly identical less capitolization...
+        private readonly IMapper _mapper;   // coupon is returned from the Discount.API repository
+                                            // we have to map that to cuponModel in the discount.proto file
+                                            // these are nearly identical less capitalization...
         private readonly ILogger<DiscountService> _logger;
 
         // Initial Version - development stopped when we needed to map componentModel in GetDiscount
@@ -34,6 +35,29 @@ namespace Discount.Grpc.Services
 
         public override async Task<CouponModel> GetDiscount(GetDiscountRequest request, ServerCallContext context)
         {
+            /*
+             
+            Note: Below is the method we had used in our Discount.Api controller,
+                     We use the same patterns herein.... 
+                     The same is true for all other methods.
+                     The only signifigant difference is that we implement:
+                     ~ exception handling
+                     ~ logging
+                     ~ AutoMapper - to map between Coupon and CouponModel in some cases before and after the call...
+            CouponModel is the model used for gprc communications Coupon is the model we are using outside of gprc
+            So, we know that when we begin to consume this, we will have to AutoMap it the other way on the other side of this call; whoever calls these methods....
+
+            Also, Notice: We are using Requests which are defined in our .proto file
+            Finally, "ServerCallContext" is derived from the GRPRC framework, this allows us to connect to GPRC
+
+                Code from  Discount.Api controller
+                ===================================
+                var discount = await _repository.GetDiscount(productName);
+                return Ok(discount);
+                ===================================
+
+            */
+
             // we are only using the CouponModel.ProductName here, so, we have no front end conversion required.
             var coupon = await _repository.GetDiscount(request.ProductName);   // note we are creating Coupon here
             if (coupon == null)
@@ -64,6 +88,7 @@ namespace Discount.Grpc.Services
 
         public override async Task<CouponModel> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
         {
+            
             // our request is presenting us with a CouponModel 
             // Our UpdateDiscount call in Discount.API requires a Coupon entity
             // So, we have to do a conversion CouponModel -> Coupon prior to the call

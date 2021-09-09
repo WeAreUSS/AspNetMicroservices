@@ -13,7 +13,9 @@ namespace Discount.Grpc
             // The following was copied from Discount.API Program.cs
             var host = CreateHostBuilder(args).Build();
             // Reference: Discount.Grpc.Extensions (also copied from Discount.API)
-            host.MigrateDatabase<Program>();
+            host.MigrateDatabase<Program>(); // <-- Method is in Host\HostExtensions.cs , 
+                                             // This is a seeding and table creation method for the Postgre database.
+                                             // It basically drops and creates the Coupon discounts Table and installs a few discounts into that table
             host.Run();
         }
 

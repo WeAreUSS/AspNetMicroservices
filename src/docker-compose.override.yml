@@ -3,6 +3,12 @@ version: '3.4'
 # list of all services in the architecture
 services:
 
+ basketdb:
+    container_name: basketdb
+    restart: always
+    ports:
+      - "6379:6379"
+
  catalogdb:
     container_name: catalogdb
     restart: always
@@ -10,12 +16,6 @@ services:
       - "27017:27017"   # container port number/ local computer port number
     volumes:  
       - mongo_data:/data/db
-
- basketdb:
-    container_name: basketdb
-    restart: always
-    ports:
-      - "6379:6379"
 
  discountdb:
     container_name: discountdb
@@ -29,11 +29,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
+ orderdb:
+    container_name: orderdb
+    environment:
+        SA_PASSWORD: "SwN12345678"
+        ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+        - "1433:1433"
+
+
  pgadmin:
     container_name: pgadmin
     environment:
-      - PGADMIN_DEFAULT_EMAIL=wholliday@prometheusgroup.com
-      - PGADMIN_DEFAULT_PASSWORD=admin1234
+      - PGADMIN_DEFAULT_EMAIL=Walt@WeAreUSS.com
+      - PGADMIN_DEFAULT_PASSWORD=Assh0les!
     restart: always
     ports:
         - "5050:80"
@@ -50,34 +60,58 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # comes from documentation for portainer and docker
       - portainer_data:/data
 
- catalog.api:
-    container_name: catalog.api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=mongodb://catalogdb:27017" # override appsettings.json to use our new mongo container...
-    depends_on:
-      - catalogdb # our catalog.api depends on catalogdb, also this says to start db before catalog.api
-    ports:
-      - "8000:80" # port forward container port 8000 to our local port 80
-      
+
  basket.api:
     container_name: basket.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "CacheSettings:ConnectionString=basketdb:6379" # override appsettings.json to use our Redis container...
+      - "CacheSettings:RedisConnectionString=basketdb:6379" # override appsettings.json to use our Redis container...
+      - "GrpcSettings:DiscountUrl=http://discount.grpc" # also used in video: "GrpcSettings:DiscountUrl=discount.grpc", question submitted
     depends_on:
       - basketdb # our basket.api depends on basketdb for caching of ShoppingCart, also this says to start db before basket.api
     ports:
       - "8001:80"
 
-
+ catalog.api:
+    container_name: catalog.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:MongoConnectionString=mongodb://catalogdb:27017" # override appsettings.json to use our new mongo container...
+    depends_on:
+      - catalogdb # our catalog.api depends on catalogdb, also this says to start db before catalog.api
+    ports:
+      - "8000:80" # port forward container port 8000 to our local port 80
+      
  discount.api:
     container_name: discount.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+      - "DatabaseSettings:PostgresConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
     depends_on:
       - discountdb
     ports:
       - "8002:80"
 
+
+ discount.grpc:
+    container_name: discount.grpc
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:PostgresConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+    depends_on:
+      - discountdb
+    ports:
+      - "8003:80"
+
+ ordering.api:
+    container_name: ordering.api
+    environment:
+        - ASPNETCORE_ENVIRONMENT=Development
+        - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"            
+        #- "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+        - "ElasticConfiguration:Uri=http://elasticsearch:9200"
+    depends_on:
+        - orderdb
+        - rabbitmq
+    ports:
+        - "8004:80"

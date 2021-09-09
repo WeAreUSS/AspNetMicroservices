@@ -35,7 +35,7 @@ namespace Discount.Grpc
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<DiscountService>(); // under Services directory - This was created after DiscountService was created to provide fore injection..
+                endpoints.MapGrpcService<DiscountService>(); // under Services directory - This was created after DiscountService was created to provide for injection..
 
                 endpoints.MapGet("/", async context =>
                 {

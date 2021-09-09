@@ -2,7 +2,7 @@
 {
     public class BasketCheckout
     {
-        public string UserName { get; set; }
+        public string UserName { get; set; } // used as the key in the [key,value] pair for the redis object
         public decimal TotalPrice { get; set; }
 
         // BillingAddress

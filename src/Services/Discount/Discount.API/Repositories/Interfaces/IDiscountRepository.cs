@@ -4,6 +4,7 @@ using Discount.API.Entities;
 
 namespace Discount.API.Repositories.Interfaces
 {
+    // Not used in GRPC, created to build and test Discount.Api ONLY
     public interface IDiscountRepository
     {
         Task<Coupon> GetDiscount(string productName);
