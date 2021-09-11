@@ -77,11 +77,11 @@ namespace Ordering.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
-                {
-                    Predicate = _ => true,
-                    //ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                });
+                //endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                //{
+                //    Predicate = _ => true,
+                //    //ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                //});
             });
         }
     }
