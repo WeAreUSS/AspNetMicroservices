@@ -1,6 +1,6 @@
 
 //using HealthChecks.UI.Client;
-//using MassTransit;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -36,29 +36,37 @@ namespace Basket.API
         public void ConfigureServices(IServiceCollection services)
         {
             // Redis Configuration for injecting into Repository Classes
+            //=========================================================
             services.AddStackExchangeRedisCache(options =>
             {
                // options.Configuration = "localhost:6379"; // <-- initial non appsettings.json file configuration
                  options.Configuration = Configuration.GetValue<string>("CacheSettings:RedisConnectionString"); // redis caching db
             });
 
-            //// General Configuration
+            // General Configuration
+            // ======================
             services.AddScoped<IBasketRepository, BasketRepository>(); // added after controller was made to inject repository for http
             services.AddAutoMapper(typeof(Startup));
 
             // Grpc Configuration - enabled after client was generated
+            //==========================================================
             services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>
                         (o => o.Address = new Uri(Configuration["GrpcSettings:DiscountUrl"]));
             services.AddScoped<DiscountGrpcService>();
 
-            //// MassTransit-RabbitMQ Configuration
-            //services.AddMassTransit(config => {
-            //    config.UsingRabbitMq((ctx, cfg) => {
-            //        cfg.Host(Configuration["EventBusSettings:HostAddress"]);
-            //        cfg.UseHealthCheck(ctx);
-            //    });
-            //});
-            //services.AddMassTransitHostedService();
+            // MassTransit-RabbitMQ Configuration
+            // ==================================
+            services.AddMassTransit(config =>
+            {
+                config.UsingRabbitMq((ctx, cfg) =>
+                {
+                    cfg.Host(Configuration["EventBusSettings:HostAddress"]);
+                   // cfg.UseHealthCheck(ctx);
+                });
+            });
+            services.AddMassTransitHostedService();
+            //services.AddHealthChecks()
+            //        .AddRedis(Configuration["CacheSettings:ConnectionString"], "Redis Health", HealthStatus.Degraded);    
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -66,8 +74,7 @@ namespace Basket.API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Basket.API", Version = "v1" });
             });
 
-            //services.AddHealthChecks()
-            //        .AddRedis(Configuration["CacheSettings:ConnectionString"], "Redis Health", HealthStatus.Degraded);                    
+                           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

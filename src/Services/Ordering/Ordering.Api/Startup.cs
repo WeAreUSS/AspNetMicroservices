@@ -1,6 +1,6 @@
-//using EventBus.Messages.Common;
+using EventBus.Messages.Common;
 //using HealthChecks.UI.Client;
-//using MassTransit;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -31,23 +31,30 @@ namespace Ordering.API
             services.AddInfrastructureServices(Configuration);
 
             // MassTransit-RabbitMQ Configuration
-            //services.AddMassTransit(config => {
+            //=======================================
+            services.AddMassTransit(config =>
+            {
 
-            //    config.AddConsumer<BasketCheckoutConsumer>();
+                config.AddConsumer<BasketCheckoutConsumer>();
 
-            //    config.UsingRabbitMq((ctx, cfg) => {
-            //        cfg.Host(Configuration["EventBusSettings:HostAddress"]);
-            //        cfg.UseHealthCheck(ctx);
+                // MassTransit-RabbitMQ Configuration
+                // ==================================
+                config.UsingRabbitMq((ctx, cfg) =>
+                {
+                    cfg.Host(Configuration["EventBusSettings:HostAddress"]);
+                   // cfg.UseHealthCheck(ctx);
 
-            //        cfg.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, c => {
-            //            c.ConfigureConsumer<BasketCheckoutConsumer>(ctx);
-            //        });
-            //    });
-            //});
-            //services.AddMassTransitHostedService();
+                    cfg.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, c =>
+                    {
+                        c.ConfigureConsumer<BasketCheckoutConsumer>(ctx);
+                    });
+                });
+            });
+            services.AddMassTransitHostedService();
 
             // General Configuration
-            //services.AddScoped<BasketCheckoutConsumer>();
+            //============================
+            services.AddScoped<BasketCheckoutConsumer>();
             services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();

@@ -4,8 +4,8 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Basket.API.GrpcServices; // enabled after DiscountGrpcService.cs was developed under Grpc folder
-//using EventBus.Messages.Events;
-//using MassTransit;
+using EventBus.Messages.Events;
+using MassTransit;
 using Basket.API.Entities;
 using Basket.API.Repositories.Interfaces;
 
@@ -17,7 +17,7 @@ namespace Basket.API.Controllers
     {
         private readonly IBasketRepository _repository;
         private readonly DiscountGrpcService _discountGrpcService; // client
-        //private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly IMapper _mapper;
 
         // First implementation - Basket repository only
@@ -27,21 +27,21 @@ namespace Basket.API.Controllers
         //}
 
         // Second implementation - After DiscountGrpcService.cs was developed
-        public BasketController(IBasketRepository repository, DiscountGrpcService discountGrpcService,  IMapper mapper)
-        {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        }
-
-        //// Final implementation
-        //public BasketController(IBasketRepository repository, DiscountGrpcService discountGrpcService, IPublishEndpoint publishEndpoint, IMapper mapper)
+        //public BasketController(IBasketRepository repository, DiscountGrpcService discountGrpcService,  IMapper mapper)
         //{
         //    _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         //    _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
-        //    _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
         //    _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         //}
+
+        //// Final implementation
+        public BasketController(IBasketRepository repository, DiscountGrpcService discountGrpcService, IPublishEndpoint publishEndpoint, IMapper mapper)
+        {
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _discountGrpcService = discountGrpcService ?? throw new ArgumentNullException(nameof(discountGrpcService));
+            _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
 
         [HttpGet("{userName}", Name = "GetBasket")]
         [ProducesResponseType(typeof(ShoppingCart), (int)HttpStatusCode.OK)]
@@ -99,9 +99,9 @@ namespace Basket.API.Controllers
 
             // ToDo
             // send checkout event to rabbitmq
-            //var eventMessage = _mapper.Map<BasketCheckoutEvent>(basketCheckout);
-            //eventMessage.TotalPrice = basket.TotalPrice;
-            //await _publishEndpoint.Publish<BasketCheckoutEvent>(eventMessage);
+            var eventMessage = _mapper.Map<BasketCheckoutEvent>(basketCheckout);
+            eventMessage.TotalPrice = basket.TotalPrice;
+            await _publishEndpoint.Publish<BasketCheckoutEvent>(eventMessage);
 
             // remove the basket
             await _repository.DeleteBasket(basket.UserName);
