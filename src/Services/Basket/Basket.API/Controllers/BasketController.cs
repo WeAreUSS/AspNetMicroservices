@@ -1,13 +1,13 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using Basket.API.Entities;
 using Basket.API.GrpcServices; // enabled after DiscountGrpcService.cs was developed under Grpc folder
+using Basket.API.Repositories.Interfaces;
 using EventBus.Messages.Events;
 using MassTransit;
-using Basket.API.Entities;
-using Basket.API.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Basket.API.Controllers
 {
@@ -34,7 +34,8 @@ namespace Basket.API.Controllers
         //    _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         //}
 
-        //// Final implementation
+        // Final implementation
+        // ======================
         public BasketController(IBasketRepository repository, DiscountGrpcService discountGrpcService, IPublishEndpoint publishEndpoint, IMapper mapper)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
@@ -84,26 +85,30 @@ namespace Basket.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Checkout([FromBody] BasketCheckout basketCheckout)
         {
-            // ToDo
+            // IMPLEMENTATION of MassTransit & RabbitMQ Message Publishing
+            //=============================================================
+            // ToDoDone
             // get existing basket with total price            
             // Set TotalPrice on basketCheckout eventMessage
-            // send checkout event to rabbitmq
+            // send checkout event to RabbitMQ
             // remove the basket
 
-            // get existing basket with total price
+            // get existing basket with total price - returns ShoppingCart Object
             var basket = await _repository.GetBasket(basketCheckout.UserName);
             if (basket == null)
             {
                 return BadRequest();
             }
 
-            // ToDo
-            // send checkout event to rabbitmq
-            var eventMessage = _mapper.Map<BasketCheckoutEvent>(basketCheckout);
+            // ToDoDone
+            // send checkout event to RabbitMQ & MassTransit
+            //==============================================
+            var eventMessage = _mapper.Map<BasketCheckoutEvent>(basketCheckout); // convert this ShoppingCart Object to a BasketCheckoutEvent Object
             eventMessage.TotalPrice = basket.TotalPrice;
+            // publish msg to MassTransit buss
             await _publishEndpoint.Publish<BasketCheckoutEvent>(eventMessage);
 
-            // remove the basket
+            // remove the basket because we do not use it after sending it off to the EventBus
             await _repository.DeleteBasket(basket.UserName);
 
             return Accepted();

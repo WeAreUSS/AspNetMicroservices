@@ -1,5 +1,7 @@
 ﻿namespace Basket.API.Entities
 {
+    // Same as Ordering Model: Ordering.Domain.Entities.Order
+    //========================
     public class BasketCheckout
     {
         public string UserName { get; set; } // used as the key in the [key,value] pair for the redis object
