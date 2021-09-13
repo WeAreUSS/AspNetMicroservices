@@ -13,9 +13,9 @@ namespace Ordering.Infrastructure.Mail
         public EmailSettings _emailSettings { get; }
         public ILogger<EmailService> _logger { get; }
 
-        public EmailService(IOptions<EmailSettings> mailSettings, ILogger<EmailService> logger)
+        public EmailService(IOptions<EmailSettings> emailSettings, ILogger<EmailService> logger)
         {
-            _emailSettings = mailSettings.Value;
+            _emailSettings = emailSettings.Value;
             _logger = logger;
         }
 
@@ -30,18 +30,18 @@ namespace Ordering.Infrastructure.Mail
             var from = new EmailAddress
             {
                 Email = _emailSettings.FromAddress,
-                Name = _emailSettings.FromName
+                Name = _emailSettings.FromCompany
             };
-
+            
             var sendGridMessage = MailHelper.CreateSingleEmail(from, to, subject, emailBody, emailBody);
             var response = await client.SendEmailAsync(sendGridMessage);
 
-            _logger.LogInformation("Email sent.");
+            _logger.LogInformation("Email for: " +email.To+" was successfully sent.");
 
             if (response.StatusCode == System.Net.HttpStatusCode.Accepted || response.StatusCode == System.Net.HttpStatusCode.OK)
                 return true;
 
-            _logger.LogError("Email sending failed.");
+            _logger.LogError("Email for: " +email.To+" failed.");
 
             return false;
         }

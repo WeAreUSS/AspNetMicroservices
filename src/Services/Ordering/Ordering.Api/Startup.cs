@@ -35,7 +35,7 @@ namespace Ordering.API
             services.AddMassTransit(config =>
             {
 
-                config.AddConsumer<BasketCheckoutConsumer>();
+                config.AddConsumer<BasketCheckoutConsumer>(); // we are stating that this is a consumer of RabbitMQ via MassTransit
 
                 // MassTransit-RabbitMQ Configuration
                 // ==================================
@@ -44,9 +44,11 @@ namespace Ordering.API
                     cfg.Host(Configuration["EventBusSettings:HostAddress"]);
                    // cfg.UseHealthCheck(ctx);
 
+                   // below is the actual subscription and direction as to where the message should go(routing within the application)
+                   // BasketCheckoutQueue in defined in: BuildingBlocks.EventBus.Messages.Common
                     cfg.ReceiveEndpoint(EventBusConstants.BasketCheckoutQueue, c =>
                     {
-                        c.ConfigureConsumer<BasketCheckoutConsumer>(ctx);
+                        c.ConfigureConsumer<BasketCheckoutConsumer>(ctx); // here we direct the consumption to BasketCheckoutConsumer
                     });
                 });
             });

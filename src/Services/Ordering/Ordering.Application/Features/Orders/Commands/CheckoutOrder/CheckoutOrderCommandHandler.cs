@@ -17,7 +17,7 @@ namespace Ordering.Application.Features.Orders.Commands.CheckoutOrder
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
-        private readonly IOptions<EmailSettings> _emailSettings;
+        private readonly EmailSettings _emailSettings;
         private readonly ILogger<CheckoutOrderCommandHandler> _logger;
 
         public CheckoutOrderCommandHandler(IOrderRepository orderRepository, IMapper mapper, IEmailService emailService, IOptions<EmailSettings> emailSettings, ILogger<CheckoutOrderCommandHandler> logger)
@@ -25,29 +25,29 @@ namespace Ordering.Application.Features.Orders.Commands.CheckoutOrder
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            _emailSettings = emailSettings ?? throw new ArgumentNullException(nameof(emailSettings));
+            _emailSettings = emailSettings.Value ?? throw new ArgumentNullException(nameof(emailSettings.Value));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<int> Handle(CheckoutOrderCommand request, CancellationToken cancellationToken)
         {
-            string emailAddress = _emailSettings.Value.FromAddress;
+           
 
             var orderEntity = _mapper.Map<Order>(request);
 
             var newOrder = await _orderRepository.AddAsync(orderEntity);
           
-            _logger.LogInformation($"Order {newOrder.Id}, for: "+emailAddress+" was successfully created.");
+            _logger.LogInformation($"Order {newOrder.Id}, for: "+newOrder.EmailAddress+" was successfully created.");
 
-            await SendMail(newOrder, emailAddress);
+            await SendMail(newOrder);
 
             return newOrder.Id;
         }
 
-        private async Task SendMail(Order order, string eMailAddress)
+        private async Task SendMail(Order order)
         {            
-
-            var email = new Email() { To = eMailAddress, Body = $"Order was created.", Subject = "Order was created" };
+            
+            var email = new Email() { To = order.EmailAddress, From = _emailSettings.FromAddress , Body = $"Order was created.", Subject = "Your order was placed with " +_emailSettings.FromCompany +" . The Order id: "+order.Id+" was created on: " + order.CreatedDate };
 
             try
             {
