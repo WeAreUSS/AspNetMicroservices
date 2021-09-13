@@ -17,7 +17,7 @@ namespace Basket.API.Data
 		 
         public BasketSeed(IDistributedCache cache)
         {
-            GetPreconfiguredShoppingCart("Walt");
+            GetPreconfiguredShoppingCart("swn");
         } 
 
         private static void GetPreconfiguredShoppingCart(string name)
@@ -28,15 +28,15 @@ namespace Basket.API.Data
             ShoppingCartItem thisItem = new ShoppingCartItem();
 
             thisItem.Quantity = 1;
-            thisItem.Color = "";
-            thisItem.Price = (decimal)0.00;
+            thisItem.Color = "Red";
+            thisItem.Price = (decimal)1.00;
             thisItem.ProductId = "";
             thisItem.ProductName = "";
             newCart.Items.Add(thisItem);
 
             thisItem.Quantity = 1;
-            thisItem.Color = "";
-            thisItem.Price = (decimal)0.00;
+            thisItem.Color = "Blue";
+            thisItem.Price = (decimal)2.00;
             thisItem.ProductId = "";
             thisItem.ProductName = "";
             newCart.Items.Add(thisItem);

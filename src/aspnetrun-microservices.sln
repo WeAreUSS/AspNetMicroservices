@@ -14,6 +14,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Basket", "Basket", "{85E0B105-7C0D-4E30-A7C1-BA5D2FDDED46}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basket.API", "Services\Basket\Basket.API\Basket.API.csproj", "{0B5E8C47-3916-47E8-8C1E-16D31B883975}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ACC98E9E-7597-47D5-BCF0-7077FF291833} = {ACC98E9E-7597-47D5-BCF0-7077FF291833}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Discount", "Discount", "{E36D80A3-903A-4B6F-86A5-BD0BF7EDAB4C}"
 EndProject
@@ -33,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ordering.Application", "Ser
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{D2FD37B8-31BD-407D-9C3E-4E0A5502685F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventBus.Messages", "BuildingBlocks\EventBus.Messages\EventBus.Messages.csproj", "{3C0433EF-8DB0-46C1-B795-65306AB73EAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventBus.Messages", "BuildingBlocks\EventBus.Messages\EventBus.Messages.csproj", "{3C0433EF-8DB0-46C1-B795-65306AB73EAA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

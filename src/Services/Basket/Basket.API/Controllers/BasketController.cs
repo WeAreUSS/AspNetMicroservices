@@ -17,7 +17,7 @@ namespace Basket.API.Controllers
     {
         private readonly IBasketRepository _repository;
         private readonly DiscountGrpcService _discountGrpcService; // client
-        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly IPublishEndpoint _publishEndpoint; // publishing to RabbitMQ via MassTransit
         private readonly IMapper _mapper;
 
         // First implementation - Basket repository only
@@ -105,7 +105,7 @@ namespace Basket.API.Controllers
             //==============================================
             var eventMessage = _mapper.Map<BasketCheckoutEvent>(basketCheckout); // convert this ShoppingCart Object to a BasketCheckoutEvent Object
             eventMessage.TotalPrice = basket.TotalPrice;
-            // publish msg to MassTransit buss
+            // Publish msg to MassTransit buss
             await _publishEndpoint.Publish<BasketCheckoutEvent>(eventMessage);
 
             // remove the basket because we do not use it after sending it off to the EventBus
