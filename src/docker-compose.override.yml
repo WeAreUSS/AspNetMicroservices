@@ -72,7 +72,7 @@ services:
     container_name: basket.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - "CacheSettings:RedisConnectionString=basketdb:6379" # override appsettings.json to use our Redis container...
+      - "CacheSettings:RedisConnectionString=basketdb:6379" # override appsettings.json to use our Redis container... NOTICE: NOT "localhost"
       - "GrpcSettings:DiscountUrl=http://discount.grpc" # also used in video: "GrpcSettings:DiscountUrl=discount.grpc", question submitted
       - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     depends_on:
