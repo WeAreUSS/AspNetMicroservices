@@ -53,10 +53,11 @@ namespace Ordering.API
                 });
             });
             services.AddMassTransitHostedService();
+            services.AddScoped<BasketCheckoutConsumer>(); //MassTransit &  RabbitMQ Injection of handler
+
 
             // General Configuration
             //============================
-            services.AddScoped<BasketCheckoutConsumer>();
             services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();

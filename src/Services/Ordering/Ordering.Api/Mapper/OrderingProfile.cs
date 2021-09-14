@@ -8,6 +8,7 @@ namespace Ordering.API.Mapper
 	{
 		public OrderingProfile()
 		{
+			// used in: Ordering.API.EventBusConsumer.BasketCheckoutConsumer.Consume
 			CreateMap<CheckoutOrderCommand, BasketCheckoutEvent>().ReverseMap();
 		}
 	}

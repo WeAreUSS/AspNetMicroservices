@@ -22,6 +22,7 @@ namespace Ordering.API.EventBusConsumer
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        // this is the required handler for MassTransit.IConsumer<>
         public async Task Consume(ConsumeContext<BasketCheckoutEvent> context)
         {
             // Ordering.API.Mapper.OrderingProfile: From: BasketCheckoutEvent (Model) to CheckoutOrderCommand (Model) as CheckOutOrderCommandHandler expects such
