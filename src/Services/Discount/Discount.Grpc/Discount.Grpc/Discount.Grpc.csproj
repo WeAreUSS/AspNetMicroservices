@@ -19,7 +19,7 @@
     <!--Dapper is a simple object mapper for.NET and owns the title of King of Micro ORM in terms of speed 
     and is virtually as fast as using a raw ADO.NET data reader. An ORM is an Object Relational Mapper, 
     which is responsible for mapping between database and programming language.-->
-	<PackageReference Include="Npgsql" Version="5.0.7" /> <!-- postgresSQL data communications-->
+	<PackageReference Include="Npgsql" Version="5.0.10" /> <!-- postgresSQL data communications-->
   </ItemGroup>
 
   <ItemGroup>
