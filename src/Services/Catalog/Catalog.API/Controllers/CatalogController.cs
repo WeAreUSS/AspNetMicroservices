@@ -81,7 +81,7 @@ namespace Catalog.API.Controllers
         #endregion Get Operations
 
 
-        #region CRUD Operations
+        #region WRITE Operations
 
         [HttpPost]
         [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
@@ -114,7 +114,7 @@ namespace Catalog.API.Controllers
             return Ok(await _repository.DeleteProduct(id));
         }
 
-        #endregion CRUD Operations
+        #endregion WRITE Operations
     }
 
 }

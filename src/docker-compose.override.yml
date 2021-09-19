@@ -25,7 +25,7 @@ services:
       - POSTGRES_DB=DiscountDb
     restart: always
     ports:
-        - "5432:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
@@ -36,14 +36,14 @@ services:
         ACCEPT_EULA: "Y"
     restart: always
     ports:
-        - "1433:1433"
+      - "1433:1433"
  
  rabbitmq:
     container_name: rabbitmq
     restart: always
     ports:
-        - "5672:5672"
-        - "15672:15672"
+      - "5672:5672"
+      - "15672:15672"
 
 
  pgadmin:
@@ -53,7 +53,7 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=Assh0les!
     restart: always
     ports:
-        - "5050:80"
+      - "5050:80"
     volumes:
       - pgadmin_data:/root/.pgadmin
 
@@ -114,13 +114,26 @@ services:
  ordering.api:
     container_name: ordering.api
     environment:
-        - ASPNETCORE_ENVIRONMENT=Development
-        - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"  
-        - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"  
+      - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
     depends_on:
-        - orderdb
-        - rabbitmq
+      - orderdb
+      - rabbitmq
     ports:
-        - "8004:80"
+      - "8004:80"
+
+ ocelotapigw:
+    container_name: ocelotapigw
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - catalog.api
+      - basket.api
+      - discount.api
+      - ordering.api
+    ports:
+      - "8010:80"
+
 
 
