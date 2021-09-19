@@ -29,6 +29,14 @@ namespace Shopping.Aggregator.Controllers
         [ProducesResponseType(typeof(ShoppingModel), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<ShoppingModel>> GetShopping(string userName)
         {
+            //ToDo: Done
+            // Get basket for username
+            // Iterate through basket items and get product details for each productId
+            // Load those product details into basketModel 
+            // Use Order service to get order details for the user
+            // Load basket details and order information into Shopping Model
+            // Return ShoppingModel to requester
+
             var basket = await _basketService.GetBasket(userName);
 
             foreach (var item in basket.Items)
