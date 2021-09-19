@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Shopping.Aggregator.Services.Interfaces;
+using Shopping.Aggregator.Service.Interfaces;
 
 namespace Shopping.Aggregator.Services
 {
@@ -20,6 +20,7 @@ namespace Shopping.Aggregator.Services
         public async Task<IEnumerable<OrderResponseModel>> GetOrdersByUserName(string userName)
         {
             var response = await _client.GetAsync($"/api/v1/Order/{userName}");
+            // Shopping.Aggregator.Extensions.HttpClientExtensions.ReadContentAs
             return await response.ReadContentAs<List<OrderResponseModel>>();
         }
     }

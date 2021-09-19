@@ -14,7 +14,7 @@ using Polly.Extensions.Http;
 using Shopping.Aggregator.Services;
 using System;
 using System.Net.Http;
-using Shopping.Aggregator.Services.Interfaces;
+using Shopping.Aggregator.Service.Interfaces;
 
 namespace Shopping.Aggregator
 {
@@ -32,20 +32,23 @@ namespace Shopping.Aggregator
         {
           //  services.AddTransient<LoggingDelegatingHandler>();
 
+          // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for CatalogService
             services.AddHttpClient<ICatalogService, CatalogService>(c =>
-                c.BaseAddress = new Uri(Configuration["ApiSettings:CatalogUrl"]))
+                c.BaseAddress = new Uri(Configuration["ApiSettings:Catalog.Api_Url"]))
                // .AddHttpMessageHandler<LoggingDelegatingHandler>()
                 .AddPolicyHandler(GetRetryPolicy())
                 .AddPolicyHandler(GetCircuitBreakerPolicy());
 
+            // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for BasketService
             services.AddHttpClient<IBasketService, BasketService>(c =>
-                c.BaseAddress = new Uri(Configuration["ApiSettings:BasketUrl"]))
+                c.BaseAddress = new Uri(Configuration["ApiSettings:Basket.Api_Url"]))
                // .AddHttpMessageHandler<LoggingDelegatingHandler>()
                 .AddPolicyHandler(GetRetryPolicy())
                 .AddPolicyHandler(GetCircuitBreakerPolicy());
 
+            // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for OrderService
             services.AddHttpClient<IOrderService, OrderService>(c =>
-                c.BaseAddress = new Uri(Configuration["ApiSettings:OrderingUrl"]))
+                c.BaseAddress = new Uri(Configuration["ApiSettings:Ordering.Api_Url"]))
                // .AddHttpMessageHandler<LoggingDelegatingHandler>()
                 .AddPolicyHandler(GetRetryPolicy())
                 .AddPolicyHandler(GetCircuitBreakerPolicy());
@@ -57,9 +60,9 @@ namespace Shopping.Aggregator
             });
 
             services.AddHealthChecks()
-                .AddUrlGroup(new Uri($"{Configuration["ApiSettings:CatalogUrl"]}/swagger/index.html"), "Catalog.API", HealthStatus.Degraded)
-                .AddUrlGroup(new Uri($"{Configuration["ApiSettings:BasketUrl"]}/swagger/index.html"), "Basket.API", HealthStatus.Degraded)
-                .AddUrlGroup(new Uri($"{Configuration["ApiSettings:OrderingUrl"]}/swagger/index.html"), "Ordering.API", HealthStatus.Degraded);
+                .AddUrlGroup(new Uri($"{Configuration["ApiSettings:Catalog.Api_Url"]}/swagger/index.html"), "Catalog.API", HealthStatus.Degraded)
+                .AddUrlGroup(new Uri($"{Configuration["ApiSettings:Basket.Api_Url"]}/swagger/index.html"), "Basket.API", HealthStatus.Degraded)
+                .AddUrlGroup(new Uri($"{Configuration["ApiSettings:Ordering.Api_Url"]}/swagger/index.html"), "Ordering.API", HealthStatus.Degraded);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

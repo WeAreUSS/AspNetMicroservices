@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Shopping.Aggregator.Services.Interfaces
+namespace Shopping.Aggregator.Service.Interfaces
 {
     public interface ICatalogService
     {

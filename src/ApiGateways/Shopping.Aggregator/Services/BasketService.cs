@@ -3,7 +3,7 @@ using Shopping.Aggregator.Models;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Shopping.Aggregator.Services.Interfaces;
+using Shopping.Aggregator.Service.Interfaces;
 
 namespace Shopping.Aggregator.Services
 {
@@ -19,6 +19,7 @@ namespace Shopping.Aggregator.Services
         public async Task<BasketModel> GetBasket(string userName)
         {
             var response = await _client.GetAsync($"/api/v1/Basket/{userName}");
+            // Shopping.Aggregator.Extensions.HttpClientExtensions.ReadContentAs
             return await response.ReadContentAs<BasketModel>();
         }        
     }

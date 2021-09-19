@@ -3,7 +3,7 @@ using Shopping.Aggregator.Models;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Shopping.Aggregator.Services.Interfaces;
+using Shopping.Aggregator.Service.Interfaces;
 
 namespace Shopping.Aggregator.Controllers
 {
@@ -22,6 +22,9 @@ namespace Shopping.Aggregator.Controllers
             _orderService = orderService ?? throw new ArgumentNullException(nameof(orderService));
         }
 
+        //===================================================================================
+        // Single Response point for all services: Basket.API, Catalog.API and Ordering.Api
+        //===================================================================================
         [HttpGet("{userName}", Name = "GetShopping")]
         [ProducesResponseType(typeof(ShoppingModel), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<ShoppingModel>> GetShopping(string userName)
