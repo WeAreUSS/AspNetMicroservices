@@ -3,12 +3,16 @@ version: '3.4'
 # list of all services in the architecture
 services:
 
+# DATABSSE CONTAINERS
+#=====================
+      # Redis Caching DB CONTAINER
  basketdb:
     container_name: basketdb
     restart: always
     ports:
       - "6379:6379"
 
+      # MongoDB CONTAINER
  catalogdb:
     container_name: catalogdb
     restart: always
@@ -17,6 +21,7 @@ services:
     volumes:  
       - mongo_data:/data/db
 
+      # PostgreSQL DB CONTAINER
  discountdb:
     container_name: discountdb
     environment:
@@ -29,6 +34,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
+       # SQL Server CONTAINER
  orderdb:
     container_name: orderdb
     environment:
@@ -38,14 +44,10 @@ services:
     ports:
       - "1433:1433"
  
- rabbitmq:
-    container_name: rabbitmq
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
 
 
+# ADMINISTRATIVE CONTAINERS
+#===========================
  pgadmin:
     container_name: pgadmin
     environment:
@@ -67,7 +69,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # comes from documentation for portainer and docker
       - portainer_data:/data
 
-
+# API CONTAINERS
+#================
  basket.api:
     container_name: basket.api
     environment:
@@ -101,16 +104,6 @@ services:
     ports:
       - "8002:80"
 
- discount.grpc:
-    container_name: discount.grpc
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - "DatabaseSettings:PostgresConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
-    depends_on:
-      - discountdb
-    ports:
-      - "8003:80"
-
  ordering.api:
     container_name: ordering.api
     environment:
@@ -123,6 +116,29 @@ services:
     ports:
       - "8004:80"
 
+# MESSAGING CONTAINERS
+#======================
+ discount.grpc:
+    container_name: discount.grpc
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:PostgresConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+    depends_on:
+      - discountdb
+    ports:
+      - "8003:80"
+
+ rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
+
+# API GATEWAY CONTAINERS
+#========================
  ocelotapigw:
     container_name: ocelotapigw
     environment:
@@ -135,5 +151,16 @@ services:
     ports:
       - "8010:80"
 
-
-
+ shopping.aggregator:
+    container_name: shopping.aggregator
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ApiSettings:Catalog.Api_Url=http://catalog.api"
+      - "ApiSettings:Basket.Api_Url=http://basket.api"
+      - "ApiSettings:Ordering.Api_Url=http://ordering.api"
+    depends_on:
+      - catalog.api
+      - basket.api
+      - ordering.api
+    ports:
+      - "8005:80"
