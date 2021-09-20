@@ -1,5 +1,5 @@
-﻿namespace Shopping.Aggregator.Models
-{   // Same as Shopping.Aggregator.Models
+﻿namespace AspnetRunBasics.Models
+{
     public class CatalogModel
     {
         public string Id { get; set; }
