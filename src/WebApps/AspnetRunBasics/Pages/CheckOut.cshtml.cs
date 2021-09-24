@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AspnetRunBasics.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using AspnetRunBasics.Services.Interfaces;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AspnetRunBasics
 {
+    [Authorize]
     public class CheckOutModel : PageModel
     {
         private readonly IBasketService _basketService;
@@ -25,6 +29,9 @@ namespace AspnetRunBasics
 
         public async Task<IActionResult> OnGetAsync()
         {
+            var identity = (ClaimsIdentity)User.Identity;
+            IEnumerable<Claim> claims = identity.Claims;
+            //ToDo: Get User from Claims
             var userName = "swn";
             Cart = await _basketService.GetBasket(userName);
 
@@ -33,6 +40,9 @@ namespace AspnetRunBasics
 
         public async Task<IActionResult> OnPostCheckOutAsync()
         {
+            var identity = (ClaimsIdentity)User.Identity;
+            IEnumerable<Claim> claims = identity.Claims;
+            //ToDo: Get User from Claims
             var userName = "swn";
             Cart = await _basketService.GetBasket(userName);
 

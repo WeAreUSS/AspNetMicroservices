@@ -44,7 +44,14 @@ services:
     ports:
       - "1433:1433"
  
-
+      
+ #consul:
+ #   container_name: consul
+ #   restart: always
+ #   command: consul agent -dev -log-level=warn -ui -client=0.0.0.0
+ #   hostname: consul
+ #   ports:
+ #     - "8500:8500"
 
 # ADMINISTRATIVE CONTAINERS
 #===========================
@@ -78,31 +85,63 @@ services:
       - "CacheSettings:RedisConnectionString=basketdb:6379" # override appsettings.json to use our Redis container... NOTICE: NOT "localhost"
       - "GrpcSettings:DiscountUrl=http://discount.grpc" # also used in video: "GrpcSettings:DiscountUrl=discount.grpc", question submitted
       - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+      #- ASPNETCORE_URLS=https://+:80
+      #- ASPNETCORE_HTTPS_PORT=8001
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      #- "IdentityServer:BaseUrl=https://identityserver"
+      #- "ServiceConfig:serviceDiscoveryAddress=https://identityserver"
+      #- "ServiceConfig:serviceAddress=https://basket.api"
     depends_on:
       - basketdb # our basket.api depends on basketdb for caching of ShoppingCart, also this says to start db before basket.api
       - rabbitmq
+      #- identityserver
+      #- consul
     ports:
       - "8001:80"
+    #volumes:
+    #  - ~/.aspnet/https:/https:ro
 
  catalog.api:
     container_name: catalog.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:MongoConnectionString=mongodb://catalogdb:27017" # override appsettings.json to use our new mongo container...
+      #- ASPNETCORE_URLS=https://+:80
+      #- ASPNETCORE_HTTPS_PORT=8000
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      #- "IdentityServer:BaseUrl=https://consul"
+      #- "ServiceConfig:serviceDiscoveryAddress=https://identityserver"
+      #- "ServiceConfig:serviceAddress=https://catalog.api"
     depends_on:
       - catalogdb # our catalog.api depends on catalogdb, also this says to start db before catalog.api
+      #- identityserver
+      #- consul
     ports:
       - "8000:80" # port forward container port 8000 to our local port 80
+    #volumes:
+    #  - ~/.aspnet/https:/https:ro
       
  discount.api:
     container_name: discount.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:PostgresConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+      #- ASPNETCORE_URLS=https://+:80
+      #- ASPNETCORE_HTTPS_PORT=8002
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      #- "DatabaseSettings:ConnectionString=Server=discountdb;Port=5432;Database=discountdb;User Id=admin;Password=admin12345;"
+      #- "ServiceConfig:serviceDiscoveryAddress=https://identityserver"
+      #- "ServiceConfig:serviceAddress=https://discount.api"
     depends_on:
       - discountdb
+      #- consul
     ports:
       - "8002:80"
+    #volumes:
+    #  - ~/.aspnet/https:/https:ro
 
  ordering.api:
     container_name: ordering.api
@@ -110,11 +149,22 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - "ConnectionStrings:OrderingConnectionString=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"  
       - "EventBusSettings:HostAddress=amqp://guest:guest@rabbitmq:5672"
+      #- ASPNETCORE_URLS=https://+:80
+      #- ASPNETCORE_HTTPS_PORT=8004
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      #- "IdentityServer:BaseUrl=https://identityserver"
+      #- "ServiceConfig:serviceDiscoveryAddress=https://identityserver"
+      #- "ServiceConfig:serviceAddress=https://ordering.api"
     depends_on:
       - orderdb
       - rabbitmq
+      #- identityserver
+      #- consul
     ports:
       - "8004:80"
+    #volumes:
+    #  - ~/.aspnet/https:/https:ro
 
 # MESSAGING CONTAINERS
 #======================
@@ -123,10 +173,16 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "DatabaseSettings:PostgresConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;"
+      #- ASPNETCORE_URLS=https://+:80
+      #- ASPNETCORE_HTTPS_PORT=8003
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     depends_on:
       - discountdb
     ports:
       - "8003:80"
+    #volumes:
+    #  - ~/.aspnet/https:/https:ro
 
  rabbitmq:
     container_name: rabbitmq
@@ -143,13 +199,22 @@ services:
     container_name: ocelotapigw
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      #- ASPNETCORE_URLS=https://+:80
+      #- ASPNETCORE_HTTPS_PORT=8010
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      #- "IdentityServer:BaseUrl=https://identityserver"
     depends_on:
       - catalog.api
       - basket.api
       - discount.api
       - ordering.api
+      #- identityserver
+      #- consul
     ports:
       - "8010:80"
+    #volumes:
+    #  - ~/.aspnet/https:/https:ro
 
  shopping.aggregator:
     container_name: shopping.aggregator
@@ -158,9 +223,53 @@ services:
       - "ApiSettings:Catalog.Api_Url=http://catalog.api"
       - "ApiSettings:Basket.Api_Url=http://basket.api"
       - "ApiSettings:Ordering.Api_Url=http://ordering.api"
+      #- ASPNETCORE_URLS=https://+:80
+      #- ASPNETCORE_HTTPS_PORT=8005
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
     depends_on:
       - catalog.api
       - basket.api
+      - discount.api
       - ordering.api
     ports:
       - "8005:80"
+    #volumes:
+    #  - ~/.aspnet/https:/https:ro
+
+
+ #aspnetrunbasics:
+ #   container_name: aspnetrunbasics
+ #   environment:
+ #     - ASPNETCORE_ENVIRONMENT=Development
+ #     - ASPNETCORE_URLS=https://+:80
+ #     - ASPNETCORE_HTTPS_PORT=3000
+ #     - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+ #     - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+ #     - "ApiSettings:GatewayAddress=https://ocelotapigw"
+ #     - "IdentityServer:BaseUrl=https://identityserver"
+ #   depends_on:
+ #     - catalog.api
+ #     - basket.api
+ #     - discount.api
+ #     - ordering.api
+ #     - ocelotapigw
+ #     - identityserver
+ #   ports:
+ #     - "3000:80"
+ #   volumes:
+ #     - ~/.aspnet/https:/https:ro
+
+ #identityserver:
+ #   container_name: identityserver
+ #   environment:
+ #     - ASPNETCORE_ENVIRONMENT=Development
+ #     - ASPNETCORE_URLS=https://+:80
+ #     - ASPNETCORE_HTTPS_PORT=5050
+ #     - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+ #     - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+ #     - "WebClientBaseAddress=https://aspnetrunbasics"
+ #   ports:
+ #     - "5020:80"
+ #   volumes:
+ #     - ~/.aspnet/https:/https:ro

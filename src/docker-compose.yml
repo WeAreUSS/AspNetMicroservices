@@ -16,6 +16,8 @@ services:
   orderdb:
     image: mcr.microsoft.com/mssql/server:2017-latest
 
+  #consul:
+  #  image: consul
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -26,14 +28,17 @@ services:
   portainer:
     image: portainer/portainer-ce
 
+ 
+
+
+ # containers which exist on client system in their own seperate containers
+
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
       context: .
       dockerfile: Services/Catalog/Catalog.API/Dockerfile # very important path
 
-
- # containers which exist on client system in their own seperate containers
   basket.api:
     image: ${DOCKER_REGISTRY-}basketapi
     build:
@@ -70,6 +75,18 @@ services:
     build:
       context: .
       dockerfile: ApiGateways/Shopping.Aggregator/Dockerfile
+
+  #aspnetrunbasics:
+  #  image: ${DOCKER_REGISTRY-}aspnetrunbasics
+  #  build:
+  #    context: .
+  #    dockerfile: WebApps/AspnetRunBasics/Dockerfile
+
+  #identityserver:
+  #  image: ${DOCKER_REGISTRY-}identityserver
+  #  build:
+  #    context: .
+  #    dockerfile: SecureResource/IdentityServer/Dockerfile
 
 volumes:    
   mongo_data:

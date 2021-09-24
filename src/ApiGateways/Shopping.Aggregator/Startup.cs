@@ -32,26 +32,7 @@ namespace Shopping.Aggregator
         {
           //  services.AddTransient<LoggingDelegatingHandler>();
 
-          // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for CatalogService
-            services.AddHttpClient<ICatalogService, CatalogService>(c =>
-                c.BaseAddress = new Uri(Configuration["ApiSettings:Catalog.Api_Url"]))
-               // .AddHttpMessageHandler<LoggingDelegatingHandler>()
-                .AddPolicyHandler(GetRetryPolicy())
-                .AddPolicyHandler(GetCircuitBreakerPolicy());
-
-            // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for BasketService
-            services.AddHttpClient<IBasketService, BasketService>(c =>
-                c.BaseAddress = new Uri(Configuration["ApiSettings:Basket.Api_Url"]))
-               // .AddHttpMessageHandler<LoggingDelegatingHandler>()
-                .AddPolicyHandler(GetRetryPolicy())
-                .AddPolicyHandler(GetCircuitBreakerPolicy());
-
-            // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for OrderService
-            services.AddHttpClient<IOrderService, OrderService>(c =>
-                c.BaseAddress = new Uri(Configuration["ApiSettings:Ordering.Api_Url"]))
-               // .AddHttpMessageHandler<LoggingDelegatingHandler>()
-                .AddPolicyHandler(GetRetryPolicy())
-                .AddPolicyHandler(GetCircuitBreakerPolicy());
+            RegisterClientFactoryServices(services);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -88,6 +69,30 @@ namespace Shopping.Aggregator
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
             });
+        }
+
+        private void RegisterClientFactoryServices(IServiceCollection services)
+        {
+            // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for CatalogService
+            services.AddHttpClient<ICatalogService, CatalogService>(c =>
+                    c.BaseAddress = new Uri(Configuration["ApiSettings:Catalog.Api_Url"]))
+                // .AddHttpMessageHandler<LoggingDelegatingHandler>()
+                .AddPolicyHandler(GetRetryPolicy())
+                .AddPolicyHandler(GetCircuitBreakerPolicy());
+
+            // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for BasketService
+            services.AddHttpClient<IBasketService, BasketService>(c =>
+                    c.BaseAddress = new Uri(Configuration["ApiSettings:Basket.Api_Url"]))
+                // .AddHttpMessageHandler<LoggingDelegatingHandler>()
+                .AddPolicyHandler(GetRetryPolicy())
+                .AddPolicyHandler(GetCircuitBreakerPolicy());
+
+            // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for OrderService
+            services.AddHttpClient<IOrderService, OrderService>(c =>
+                    c.BaseAddress = new Uri(Configuration["ApiSettings:Ordering.Api_Url"]))
+                // .AddHttpMessageHandler<LoggingDelegatingHandler>()
+                .AddPolicyHandler(GetRetryPolicy())
+                .AddPolicyHandler(GetCircuitBreakerPolicy());
         }
 
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()

@@ -5,9 +5,12 @@ using AspnetRunBasics.Models;
 using AspnetRunBasics.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AspnetRunBasics.Pages
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly ICatalogService _catalogService;
@@ -31,6 +34,9 @@ namespace AspnetRunBasics.Pages
         {
             var product = await _catalogService.GetCatalog(productId);
 
+            var identity = (ClaimsIdentity)User.Identity;
+            IEnumerable<Claim> claims = identity.Claims;
+            //ToDo: Get User from Claims
             var userName = "swn";
             var basket = await _basketService.GetBasket(userName);
 

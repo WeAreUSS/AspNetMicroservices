@@ -22,6 +22,7 @@ namespace AspnetRunBasics
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
         }
 
         public IConfiguration Configuration { get; }
@@ -29,8 +30,13 @@ namespace AspnetRunBasics
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+
           //  services.AddTransient<LoggingDelegatingHandler>();
 
+          //=================================================================================================================
+          // The following are employed to allow for injection of the multiple clients which be used to obtain data
+          // from multiple sources by way of a single call to this microservice.
           // IHttpClientFactory - registered by calling AddHttpClient<Typed Client>  for CatalogService
             services.AddHttpClient<ICatalogService, CatalogService>(c =>
                 c.BaseAddress = new Uri(Configuration["ApiSettings:GatewayAddress"]))
@@ -49,6 +55,8 @@ namespace AspnetRunBasics
                // .AddHttpMessageHandler<LoggingDelegatingHandler>()
                 .AddPolicyHandler(GetRetryPolicy())
                 .AddPolicyHandler(GetCircuitBreakerPolicy());
+            //=================================================================================================================
+
 
             services.AddRazorPages();
 
@@ -87,6 +95,7 @@ namespace AspnetRunBasics
             });
         }
 
+      
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             // Polly Implementation: .WaitAndRetryAsync

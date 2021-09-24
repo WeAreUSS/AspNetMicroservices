@@ -9,16 +9,38 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="AspnetRunBasics.csproj" />
+    <None Include="Pages\Cart.cshtml" />
+    <None Include="Pages\CheckOut.cshtml" />
+    <None Include="Pages\Confirmation.cshtml" />
+    <None Include="Pages\Contact.cshtml" />
+    <None Include="Pages\Error.cshtml" />
+    <None Include="Pages\Index.cshtml" />
+    <None Include="Pages\Order.cshtml" />
+    <None Include="Pages\Privacy.cshtml" />
+    <None Include="Pages\Product.cshtml" />
+    <None Include="Pages\ProductDetail.cshtml" />
+    <None Include="Pages\Shared\_Layout.cshtml" />
+    <None Include="Pages\Shared\_ProductItemPartial.cshtml" />
+    <None Include="Pages\Shared\_TopProductPartial.cshtml" />
+    <None Include="Pages\Shared\_ValidationScriptsPartial.cshtml" />
+    <None Include="Pages\_ViewImports.cshtml" />
+    <None Include="Pages\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdentityModel" Version="5.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
     <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />    
   </ItemGroup>
-
   <ItemGroup>
     <!--<ProjectReference Include="..\..\BuildingBlocks\Common.Logging\Common.Logging.csproj" />-->
   </ItemGroup>
-
 
 
 </Project>
