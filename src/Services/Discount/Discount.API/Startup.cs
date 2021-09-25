@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 using Discount.API.Repositories;
 using Discount.API.Repositories.Interfaces;
 
+using Infrastructure.ServiceDiscovery;
+
 namespace Discount.API
 {
     public class Startup
@@ -32,6 +34,7 @@ namespace Discount.API
 
             //services.AddHealthChecks()
             //    .AddNpgSql(Configuration["DatabaseSettings:ConnectionString"]);
+            ConfigureConsul(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +47,7 @@ namespace Discount.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discount.API v1"));
             }
 
+            app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseAuthorization();
@@ -54,15 +58,44 @@ namespace Discount.API
                 endpoints.MapControllers();
             });
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //    endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
-            //    {
-            //        Predicate = _ => true,
-            //        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            //    });
-            //});
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                //endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                //{
+                //    Predicate = _ => true,
+                //    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                //});
+            });
         }
+
+        #region Private Methods
+
+        //private void ConfigureJWT(IServiceCollection services)
+        //{
+        //    services.AddAuthentication("Bearer")
+        //        .AddJwtBearer("Bearer", options =>
+        //        {
+        //            options.Authority = Configuration["IdentityServer:BaseUrl"];
+        //            options.TokenValidationParameters = new TokenValidationParameters
+        //            {
+        //                ValidateAudience = false
+        //            };
+        //        });
+
+        //    services.AddAuthorization(options =>
+        //    {
+        //        options.AddPolicy("ClientIdPolicy", policy => policy.RequireClaim("client_id", "shop_mvc_client"));
+        //    });
+        //}
+
+        private void ConfigureConsul(IServiceCollection services)
+        {
+            var serviceConfig = Configuration.GetServiceConfig();
+
+            services.RegisterConsulServices(serviceConfig);
+        } 
+
+        #endregion  Private Methods
     }
 }

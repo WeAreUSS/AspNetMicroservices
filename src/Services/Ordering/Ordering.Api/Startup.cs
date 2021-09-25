@@ -1,4 +1,5 @@
 using EventBus.Messages.Common;
+using Infrastructure.ServiceDiscovery;
 //using HealthChecks.UI.Client;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ordering.API.EventBusConsumer;
 using Ordering.Application;
@@ -68,6 +70,9 @@ namespace Ordering.API
 
             //services.AddHealthChecks()
             //        .AddDbContextCheck<OrderContext>();
+
+            ConfigureJWT(services);
+            ConfigureConsul(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,8 +85,11 @@ namespace Ordering.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ordering.API v1"));
             }
 
+            app.UseHttpsRedirection();
+
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -94,5 +102,34 @@ namespace Ordering.API
                 //});
             });
         }
+
+        #region Private Methods
+
+        private void ConfigureJWT(IServiceCollection services)
+        {
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = Configuration["IdentityServer:BaseUrl"];
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ClientIdPolicy", policy => policy.RequireClaim("client_id", "shop_mvc_client"));
+            });
+        }
+
+        private void ConfigureConsul(IServiceCollection services)
+        {
+            var serviceConfig = Configuration.GetServiceConfig();
+
+            services.RegisterConsulServices(serviceConfig);
+        } 
+
+        #endregion  Private Methods
     }
 }

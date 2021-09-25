@@ -15,6 +15,12 @@ using Catalog.API.Data.Interfaces;
 using Catalog.API.Repositories;
 using Catalog.API.Repositories.Interfaces;
 
+
+using Infrastructure.ServiceDiscovery;
+using Microsoft.IdentityModel.Tokens;
+
+
+
 namespace Catalog.API
 {
     public class Startup
@@ -38,6 +44,8 @@ namespace Catalog.API
 
             services.AddScoped<ICatalogContext, CatalogContext>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            ConfigureJWT(services);
+            ConfigureConsul(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,8 +58,11 @@ namespace Catalog.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Catalog.API v1"));
             }
 
+            app.UseHttpsRedirection();
+
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -59,5 +70,34 @@ namespace Catalog.API
                 endpoints.MapControllers();
             });
         }
+
+        #region Private Methods
+
+        private void ConfigureJWT(IServiceCollection services)
+        {
+            services.AddAuthentication("Bearer")
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.Authority = Configuration["IdentityServer:BaseUrl"];
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ClientIdPolicy", policy => policy.RequireClaim("client_id", "shop_mvc_client"));
+            });
+        }
+
+        private void ConfigureConsul(IServiceCollection services)
+        {
+            var serviceConfig = Configuration.GetServiceConfig();
+
+            services.RegisterConsulServices(serviceConfig);
+        } 
+
+        #endregion  Private Methods
     }
 }

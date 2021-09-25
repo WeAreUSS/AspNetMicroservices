@@ -238,25 +238,25 @@ services:
     #  - ~/.aspnet/https:/https:ro
 
 
- #aspnetrunbasics:
- #   container_name: aspnetrunbasics
- #   environment:
- #     - ASPNETCORE_ENVIRONMENT=Development
- #     - ASPNETCORE_URLS=https://+:80
- #     - ASPNETCORE_HTTPS_PORT=3000
- #     - ASPNETCORE_Kestrel__Certificates__Default__Password=password
- #     - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
- #     - "ApiSettings:GatewayAddress=https://ocelotapigw"
- #     - "IdentityServer:BaseUrl=https://identityserver"
- #   depends_on:
- #     - catalog.api
- #     - basket.api
- #     - discount.api
- #     - ordering.api
- #     - ocelotapigw
- #     - identityserver
- #   ports:
- #     - "3000:80"
+ aspnetrunbasics:
+    container_name: aspnetrunbasics
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      #- ASPNETCORE_URLS=https://+:80
+      #- ASPNETCORE_HTTPS_PORT=3000
+      #- ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      #- ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - "ApiSettings:GatewayAddress=https://ocelotapigw"
+      #- "IdentityServer:BaseUrl=https://identityserver"
+    depends_on:
+      - catalog.api
+      - basket.api
+      - discount.api
+      - ordering.api
+      - ocelotapigw
+      #- identityserver
+    ports:
+      - "3000:80"
  #   volumes:
  #     - ~/.aspnet/https:/https:ro
 
