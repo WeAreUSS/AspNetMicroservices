@@ -16,8 +16,8 @@ services:
   orderdb:
     image: mcr.microsoft.com/mssql/server:2017-latest
 
-  #consul:
-  #  image: consul
+  consul:
+    image: consul
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -82,17 +82,18 @@ services:
       context: .
       dockerfile: WebApps/AspnetRunBasics/Dockerfile
 
-  #identityserver:
-  #  image: ${DOCKER_REGISTRY-}identityserver
-  #  build:
-  #    context: .
-  #    dockerfile: SecureResource/IdentityServer/Dockerfile
+  identityserver:
+    image: ${DOCKER_REGISTRY-}identityserver
+    build:
+      context: .
+      dockerfile: Security/Dockerfile
 
 volumes:    
   mongo_data:
   portainer_data:
   postgres_data:
   pgadmin_data:
+
 
 
 
